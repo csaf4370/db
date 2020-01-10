@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+. "${bin}/include/all"
+
+file=$3
+
+connection_details="--defaults-extra-file=${connection_config}"
+
+where=$(cat "${ssh_config}")
+_user=$(printf %q $(cat "${connection_config}" | grep "^user" | cut -d '=' -f 2 | xargs))
+_pass=$(printf %q $(cat "${connection_config}" | grep "^password" | cut -d '=' -f 2 | xargs))
+_host=$(printf %q $(cat "${connection_config}" | grep "^host" | cut -d '=' -f 2 | xargs))
+
+cmd="mysqldump --opt -B --add-drop-database --skip-extended-insert --user='${_user}' --host='${_host}' --password='${_pass}' ${database} | gzip"
+
+ssh ${where} "nice -n 19 sh -c '${cmd}'" > "${file}"
+
+exit $?

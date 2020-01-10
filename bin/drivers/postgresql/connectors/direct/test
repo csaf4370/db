@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+set -x #echo on
+
+. "${bin}/include/all"
+
+connection_details="--defaults-extra-file=${connection_config}"
+
+params=$(cat "${connection_config}")
+options="--dbname=postgresql://"
+# PGPASSFILE=${connection_details} "${psql}" -c"quit" >/dev/null
+
+"${psql}" ${options}${params} -c "\q" 
+code=${?}
+
+if [ "${code}" -eq 127 ]; then
+  echo "${COLOR_RED}Could not find mysql binary.${COLOR_NC}"
+else
+    if [ "${code}" -eq 1 ]; then
+      echo "${COLOR_RED}Could not connect to database.${COLOR_NC}"
+    else
+      echo "${COLOR_GREEN}Successfully connected to database.${COLOR_NC}"
+    fi
+fi
+exit ${code}

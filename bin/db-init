@@ -39,6 +39,7 @@ while true; do
 
   if [ -d "${bin}/drivers/${type}" ]; then
     echo "${type}" > "${repository}/type"
+    echo "${type}" > "${repository}/databasetype" #this is needed for the driver
     "${bin}/../db" server add
     exit $?
   fi

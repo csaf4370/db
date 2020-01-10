@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+
+. "${bin}/include/all"
+
+file=$3
+
+options="--dbname=postgresql://"
+connection_details="--defaults-extra-file=${connection_config}"
+
+params=$(cat "${connection_config}")
+echo 'params: ' ${params}
+
+# source PGSERVICE=${connection_details}
+
+echo "configs:"
+echo ${mysqldump}
+echo ${connection_details}
+echo ${options}
+echo ${database}
+echo ${file}
+
+echo "exec"
+
+"${pg_dump}" ${options}${params} | gzip > "${file}" 
+exit $?
+
+# "${pg_dumpall}"
+#"${pg_dumpall}" | gzip > "${file}"
+# exit $?
+
+# "${mysqldump}" ${connection_details} ${options} "${database}" | gzip > "${file}"
+# exit $?

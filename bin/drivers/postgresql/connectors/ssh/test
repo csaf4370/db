@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+. "${bin}/include/all"
+
+connection_details="--defaults-extra-file=${connection_config}"
+
+where=$(cat "${ssh_config}")
+_user=$(cat "${connection_config}" | grep "^user" | cut -d '=' -f 2 | xargs)
+_pass=$(cat "${connection_config}" | grep "^password" | cut -d '=' -f 2 | xargs)
+_host=$(cat "${connection_config}" | grep "^host" | cut -d '=' -f 2 | xargs)
+ssh ${where} "mysql --user=\"$_user\" --host=\"$_host\" --password=\"$_pass\" -e\"quit\" $database"
+code=${?}
+
+if [ "${code}" -eq 127 ]; then
+  echo "${COLOR_RED}Could not find mysql binary.${COLOR_NC}"
+else
+    if [ "${code}" -eq 1 ]; then
+      echo "${COLOR_RED}Could not connect to database.${COLOR_NC}"
+    else
+      echo "${COLOR_GREEN}Successfully connected to database.${COLOR_NC}"
+    fi
+fi
+exit ${code}

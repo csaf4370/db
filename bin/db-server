@@ -31,10 +31,16 @@ write_config()
     mkdir -p "${_dumps}"
   fi
 
-  echo "[client]" > "${_credentials}"
-  echo "user = ${username}" >> "${_credentials}"
-  echo "password = ${password}" >> "${_credentials}"
-  echo "host = ${host}" >> "${_credentials}"
+  dbtype=$(cat "${repository}/type") 
+
+  if [ "${dbtype}" = "postgresql" ]; then
+	  echo "${username}:${password}@${host}:${port}/${database}" > "${_credentials}"
+  else
+	  echo "[client]" > "${_credentials}"
+	  echo "user = ${username}" >> "${_credentials}"
+	  echo "password = ${password}" >> "${_credentials}"
+	  echo "host = ${host}" >> "${_credentials}"
+  fi
 
   chmod 600 "${_credentials}"
 
@@ -118,7 +124,7 @@ add_server()
     write_config "${test}"
     test_config "${test}"
     code="${?}"
-    delete_config "${test}"
+    # delete_config "${test}"
 
     if [ "${code}" -eq 127 ]; then
       echo "${COLOR_RED}Could not find mysql binary.${COLOR_NC}"
